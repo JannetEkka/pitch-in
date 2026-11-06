@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: pitch-in
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/config
+    envVars:
+      - key: NODE_VERSION
+        value: "22.13.0"
+      - key: NODE_ENV
+        value: production
+      - key: NODE_OPTIONS
+        value: --disable-warning=ExperimentalWarning
+      - key: PAYPAL_SANDBOX_CLIENT_ID
+        sync: false
+      - key: PAYPAL_SANDBOX_CLIENT_SECRET
+        sync: false
+      - key: PAYPAL_HACK_GEMINI_API_KEY
+        sync: false
+      - key: PAYPAL_SANDBOX_DOER_EMAIL
+        sync: false

@@ -1,0 +1,452 @@
+{
+ "info": {
+  "name": "Pitch In API",
+  "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+  "description": "Pitch In's REST API. Sign in with /api/session first (a demo persona); Postman keeps the cookie."
+ },
+ "variable": [
+  {
+   "key": "base",
+   "value": "http://localhost:8080"
+  },
+  {
+   "key": "pledge_id",
+   "value": ""
+  },
+  {
+   "key": "case_id",
+   "value": ""
+  }
+ ],
+ "item": [
+  {
+   "name": "Config",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/config",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "config"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Users",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/users",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "users"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Sign in as Ben (demo)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/session",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "session"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"user_id\": \"u_ben\"\n}"
+    }
+   }
+  },
+  {
+   "name": "List bounties",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/bounties",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Bounty detail",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/bounties/b_canal",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties",
+      "b_canal"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Report a problem",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/reports",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "reports"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"text\": \"The drain outside the school gate is blocked with leaves.\",\n \"area\": \"Lakeview Lane\",\n \"photo\": null,\n \"lat\": 12.9719,\n \"lng\": 77.6412\n}"
+    }
+   }
+  },
+  {
+   "name": "Start a pledge (creates PayPal order, intent=AUTHORIZE)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/bounties/b_canal/pledges",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties",
+      "b_canal",
+      "pledges"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"amount_cents\": 1500\n}"
+    }
+   }
+  },
+  {
+   "name": "Confirm pledge (authorize after buyer approval)",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/pledges/{{pledge_id}}/confirm",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "pledges",
+      "{{pledge_id}}",
+      "confirm"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{}"
+    }
+   }
+  },
+  {
+   "name": "Claim",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/bounties/b_canal/claim",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties",
+      "b_canal",
+      "claim"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{}"
+    }
+   }
+  },
+  {
+   "name": "Submit proof",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/bounties/b_canal/proof",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties",
+      "b_canal",
+      "proof"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{}"
+    }
+   }
+  },
+  {
+   "name": "Vote",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/bounties/b_canal/vote",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "bounties",
+      "b_canal",
+      "vote"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"choice\": \"pay\"\n}"
+    }
+   }
+  },
+  {
+   "name": "Ledger",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/ledger",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "ledger"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Verify ledger chain",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/ledger/verify",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "ledger",
+      "verify"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Support cases",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/cases",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "cases"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Investigate case with AI",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/cases/{{case_id}}/investigate",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "cases",
+      "{{case_id}}",
+      "investigate"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{}"
+    }
+   }
+  },
+  {
+   "name": "Reconcile with PayPal",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/reconcile",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "reconcile"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{}"
+    }
+   }
+  },
+  {
+   "name": "Area health",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/health/areas",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "health",
+      "areas"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Notifications feed (for Zapier RSS)",
+   "request": {
+    "method": "GET",
+    "header": [],
+    "url": {
+     "raw": "{{base}}/api/feed.rss",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "feed.rss"
+     ]
+    }
+   }
+  },
+  {
+   "name": "Demo: advance clock 7 days",
+   "request": {
+    "method": "POST",
+    "header": [
+     {
+      "key": "Content-Type",
+      "value": "application/json"
+     }
+    ],
+    "url": {
+     "raw": "{{base}}/api/demo/advance",
+     "host": [
+      "{{base}}"
+     ],
+     "path": [
+      "api",
+      "demo",
+      "advance"
+     ]
+    },
+    "body": {
+     "mode": "raw",
+     "raw": "{\n \"days\": 7\n}"
+    }
+   }
+  }
+ ]
+}
