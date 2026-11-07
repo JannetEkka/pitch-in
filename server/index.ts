@@ -47,7 +47,8 @@ app.use("/api", (req, res, next) => {
 
 // Demo sign-in: pick a neighbour. Production would use Log in with PayPal; see SECURITY.md.
 function userId(req: Request): string {
-  const c = req.headers.cookie?.match(/(?:^|;\s*)pi_user=([a-z0-9_]+)/)?.[1];
+  // The X-Pitch-In-User header is the same demo sign-in for API clients (SDKs, Postman).
+  const c = req.headers.cookie?.match(/(?:^|;\s*)pi_user=([a-z0-9_]+)/)?.[1] ?? (req.headers["x-pitch-in-user"] as string | undefined);
   if (!c) throw new B.Refused(["Choose who you are first."]);
   return B.getUser(c).id;
 }
