@@ -46,7 +46,7 @@ Gemini does the judging and explains each call in plain words. The rules in `ser
 
 ## AI
 
-Gemini (default `gemini-flash-latest`, set with `GEMINI_MODEL`) through the Vercel AI SDK, always with a zod schema:
+Gemini (default `gemini-3.5-flash`, set with `GEMINI_MODEL`) through the Vercel AI SDK, always with a zod schema:
 - **Report → bounty:** checklist, job type, skill, hours, materials, urgency, hazard (`server/ai.ts`).
 - **Proof check:** same place, each checklist item with a confidence, staging, instructions hidden in photos.
 - **Recheck:** did the fix hold.
@@ -92,6 +92,18 @@ npm test             # 29 tests: money rules, pricing, the full lifecycle, tampe
 ```
 
 ## What we measured, and what we haven't
+
+- **Live PayPal sandbox run (Nov 7).** On the "canal footpath" bounty ($23 goal):
+  - two funders each approved a $15 pledge in PayPal's real sandbox checkout, giving two authorizations;
+  - after the proof, Pitch In captured $11.50 from each, their pro-rata share, and released the other $3.50 of each hold uncharged;
+  - it paid the doer $20.70 through Payouts and held back $2.30;
+  - the recheck failed, the funders voted to refund, and PayPal refunded $1.15 to each funder.
+  - Reconciling our records against PayPal afterwards found 0 mismatches, and the receipt chain verified intact (35 entries).
+- **Speed with `gemini-3.5-flash`:**
+  - writing a bounty from a report: 5.6 s;
+  - checking a before/after pair: 3.7 s;
+  - a support investigation that called three tools, including the Agent Toolkit's `get_refund`, and explained the money correctly: 20.7 s.
+- **Fake photos:** with synthetic test images, Gemini said they weren't photos of a real place (confidence 0.99), so the bounty went to the funders instead of paying.
 
 - **Tested:** the money rules and the full lifecycle run in 29 automated tests against the stand-in PayPal:
   - pay on proof, then the held-back share after the recheck;

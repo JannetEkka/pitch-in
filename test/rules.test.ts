@@ -95,6 +95,11 @@ describe("recheck and votes", () => {
     expect(tallyVote(ps, [{ funder_id: "f1", choice: "refund" }, { funder_id: "f2", choice: "refund" }]).action).toBe("refund");
     expect(tallyVote(ps, [{ funder_id: "f1", choice: "refund" }]).action).toBe("pay");
   });
+  it("ignores pledges abandoned at checkout when weighting votes", () => {
+    const ps = [pledge("a", "f1", 1000), pledge("b", "f2", 1000), pledge("c", "f2", 5000, { status: "created" })];
+    expect(tallyVote(ps, [{ funder_id: "f1", choice: "refund" }, { funder_id: "f2", choice: "pay" }]).action).toBe("pay");
+    expect(tallyVote(ps, [{ funder_id: "f1", choice: "refund" }, { funder_id: "f2", choice: "refund" }]).action).toBe("refund");
+  });
 });
 
 describe("pricing", () => {

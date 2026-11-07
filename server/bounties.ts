@@ -13,6 +13,7 @@ import { fraudFlags, photosFor, readPhoto, repeatPairFlag, storePhoto } from "./
 import {
   authorizedTotal,
   canClaim,
+  COUNTED,
   canPayout,
   capturePlan,
   decideRecheck,
@@ -102,7 +103,7 @@ export function openCase(bountyId: string | null, openedBy: string, kind: string
   return id;
 }
 
-const funderIds = (bountyId: string) => [...new Set(pledgesFor(bountyId).filter((p) => p.status !== "voided" && p.status !== "created").map((p) => p.funder_id))];
+const funderIds = (bountyId: string) => [...new Set(pledgesFor(bountyId).filter((p) => COUNTED.has(p.status)).map((p) => p.funder_id))];
 
 // ---------------- 1. report → draft ----------------
 
@@ -407,7 +408,19 @@ async function payout(b: Bounty, doer: User, stage: "proof" | "recheck", amountC
   if (existing?.paypal_batch_id) return existing; // already paid: idempotent
   if (!existing)
     db.prepare("INSERT INTO payouts (id, bounty_id, stage, amount_cents, batch_id, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)").run(newId("po"), b.id, stage, amountCents, batchId, clock.iso());
-  const r = await paypal.createPayout(batchId, { email: doer.paypal_email, amount_cents: amountCents, note, item_id: `${batchId}-1` });
+  let r;
+  try {
+    r = await paypal.createPayout(batchId, { email: doer.paypal_email, amount_cents: amountCents, note, item_id: `${batchId}-1` });
+  } catch (e) {
+    // PayPal rejects a reused sender_batch_id: the payout may already have gone out. Never resend; let support reconcile.
+    if (e instanceof PayPalError && e.status === 400 && /USER_BUSINESS_ERROR|DUPLICATE/.test(e.body)) {
+      db.prepare("UPDATE payouts SET status = 'check_paypal' WHERE batch_id = ?").run(batchId);
+      record(b.id, "payout.duplicate_blocked", { stage, batch_id: batchId });
+      openCase(b.id, "system", "payout_needs_check", `PayPal refused a second payout with batch ${batchId}. Check whether the first one went through.`);
+      return;
+    }
+    throw e;
+  }
   db.prepare("UPDATE payouts SET paypal_batch_id = ?, status = ? WHERE batch_id = ?").run(r.payout_batch_id, r.status, batchId);
   record(b.id, "payout.sent", { stage, amount_cents: amountCents, to: doer.paypal_email, batch_id: batchId, paypal_batch_id: r.payout_batch_id, status: r.status });
 }
@@ -485,8 +498,9 @@ export async function vote(bountyId: string, funderId: string, choice: "pay" | "
   const pledges = pledgesFor(b.id);
   if (votes.length < funderIds(b.id).length) {
     // Decide early only once a side has a clear majority of the pledged money.
-    const total = pledges.filter((p) => p.status !== "voided").reduce((s, p) => s + p.amount_cents, 0);
-    const weightOf = (c: string) => votes.filter((v) => v.choice === c).reduce((s, v) => s + pledges.filter((p) => p.funder_id === v.funder_id).reduce((t, p) => t + p.amount_cents, 0), 0);
+    const counted = pledges.filter((p) => COUNTED.has(p.status));
+    const total = counted.reduce((s, p) => s + p.amount_cents, 0);
+    const weightOf = (c: string) => votes.filter((v) => v.choice === c).reduce((s, v) => s + counted.filter((p) => p.funder_id === v.funder_id).reduce((t, p) => t + p.amount_cents, 0), 0);
     if (weightOf("pay") * 2 <= total && weightOf("refund") * 2 <= total) return b;
   }
   const t = tallyVote(pledges, votes);

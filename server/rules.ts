@@ -153,10 +153,13 @@ export function decideRecheck(v: RecheckVerdict, flags: FraudFlag[]): Decision<"
 
 // ---------- votes ----------
 
+// Pledges that count as money on the table: never the ones abandoned at checkout, voided or expired.
+export const COUNTED = new Set(["authorized", "captured", "refunded"]);
+
 // Votes are weighted by the amount pledged. Ties and no-shows favour the doer.
 export function tallyVote(pledges: Pledge[], votes: { funder_id: string; choice: "pay" | "refund" }[]): Decision<"pay" | "refund"> {
   const weight = new Map<string, number>();
-  for (const p of pledges) if (p.status !== "voided") weight.set(p.funder_id, (weight.get(p.funder_id) ?? 0) + p.amount_cents);
+  for (const p of pledges) if (COUNTED.has(p.status)) weight.set(p.funder_id, (weight.get(p.funder_id) ?? 0) + p.amount_cents);
   let pay = 0;
   let refund = 0;
   for (const v of votes) {
