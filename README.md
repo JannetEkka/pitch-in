@@ -46,7 +46,7 @@ Gemini does the judging and explains each call in plain words. The rules in `ser
 
 ## AI
 
-Gemini (default `gemini-2.5-flash`, set with `GEMINI_MODEL`) through the Vercel AI SDK, always with a zod schema:
+Gemini (default `gemini-flash-latest`, set with `GEMINI_MODEL`) through the Vercel AI SDK, always with a zod schema:
 - **Report → bounty:** checklist, job type, skill, hours, materials, urgency, hazard (`server/ai.ts`).
 - **Proof check:** same place, each checklist item with a confidence, staging, instructions hidden in photos.
 - **Recheck:** did the fix hold.
@@ -60,7 +60,7 @@ Gemini (default `gemini-2.5-flash`, set with `GEMINI_MODEL`) through the Vercel 
 - **Bryntum Gantt:** the project plan. A bigger job ("restore the path round the pond") is split into bounties that unlock in order, coloured by where each one is in the money flow, with PayPal hold expiries marked on the timeline. The demo uses Bryntum's public trial package, so the chart shows a trial watermark.
 - **Render:** hosting, with `render.yaml` for a one-click deploy.
 - **Zapier:** `GET /api/feed.rss` lists notifications. Zapier's free "RSS by Zapier" trigger can forward them to email, SMS or Slack.
-- **Postman:** a collection of the API is in `docs/`.
+- **Postman and APIMatic:** a Postman collection and an OpenAPI 3 spec of the API are in `docs/`.
 
 ## Run it
 

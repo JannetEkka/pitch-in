@@ -26,7 +26,7 @@ export const config = {
   },
   ai: {
     key: geminiKey,
-    model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL ?? "gemini-flash-latest",
     mode: geminiKey ? ("gemini" as const) : ("mock" as const),
   },
   // Money limits that the AI cannot change.

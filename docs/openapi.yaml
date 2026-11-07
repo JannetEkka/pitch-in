@@ -1,0 +1,246 @@
+openapi: 3.0.3
+info:
+  title: Pitch In API
+  version: 0.1.0
+  description: |
+    Neighbourhood bounties paid through PayPal only when the fix is verified, and again when it lasts.
+    Pledges are PayPal authorizations (held, not charged). The doer is paid with PayPal Payouts.
+    Sign in with POST /session (a demo persona); the session is a cookie.
+  license:
+    name: MIT
+servers:
+  - url: http://localhost:8080/api
+    description: Local
+components:
+  securitySchemes:
+    session:
+      type: apiKey
+      in: cookie
+      name: pi_user
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string }
+        reasons: { type: array, items: { type: string } }
+    ChecklistItem:
+      type: object
+      required: [id, text]
+      properties:
+        id: { type: string }
+        text: { type: string, description: What the after photo must show }
+    Bounty:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        report_text: { type: string }
+        area: { type: string }
+        lat: { type: number }
+        lng: { type: number }
+        job_type: { type: string, enum: [litter, drain, paint, repair, greenery, other] }
+        skill: { type: string, enum: [basic, semi, skilled] }
+        est_hours: { type: number }
+        materials_cents: { type: integer }
+        hazard: { type: string, nullable: true }
+        checklist: { type: array, items: { $ref: "#/components/schemas/ChecklistItem" } }
+        price_low_cents: { type: integer }
+        price_high_cents: { type: integer }
+        goal_cents: { type: integer }
+        holdback_pct: { type: integer, description: Share of the payment held until the recheck }
+        status:
+          type: string
+          enum: [draft, funding, funded, claimed, checking, objection_window, needs_neighbour, vote, paid, recheck_vote, closed, expired, referred]
+        reporter_id: { type: string }
+        doer_id: { type: string, nullable: true }
+        deadline: { type: string, format: date-time }
+        recheck_due_at: { type: string, format: date-time, nullable: true }
+    Pledge:
+      type: object
+      properties:
+        id: { type: string }
+        bounty_id: { type: string }
+        funder_id: { type: string }
+        amount_cents: { type: integer }
+        order_id: { type: string, description: PayPal order id (intent AUTHORIZE) }
+        authorization_id: { type: string, nullable: true }
+        auth_expires_at: { type: string, format: date-time, nullable: true }
+        status: { type: string, enum: [created, authorized, captured, voided, refunded, expired] }
+        captured_cents: { type: integer }
+        capture_id: { type: string, nullable: true }
+    Photo:
+      type: object
+      required: [image, lat, lng, accuracy, live_capture]
+      properties:
+        image: { type: string, description: "data:image/jpeg;base64,..." }
+        lat: { type: number, nullable: true }
+        lng: { type: number, nullable: true }
+        accuracy: { type: number, nullable: true }
+        live_capture: { type: boolean, description: Taken with the in-app camera }
+    LedgerEntry:
+      type: object
+      properties:
+        seq: { type: integer }
+        at: { type: string, format: date-time }
+        bounty_id: { type: string, nullable: true }
+        event: { type: string }
+        data: { type: object, additionalProperties: true }
+        prev_hash: { type: string }
+        hash: { type: string }
+  responses:
+    Refused:
+      description: Refused by a rule; reasons say which
+      content: { application/json: { schema: { $ref: "#/components/schemas/Error" } } }
+security:
+  - session: []
+paths:
+  /session:
+    post:
+      summary: Sign in as a demo neighbour
+      security: []
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [user_id], properties: { user_id: { type: string } } } } }
+      responses: { "200": { description: Signed in } }
+  /bounties:
+    get:
+      summary: List bounties with money totals
+      security: []
+      responses:
+        "200": { description: Bounties, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/Bounty" } } } } }
+  /bounties/{id}:
+    get:
+      summary: A bounty with its pledges, payouts, photos, AI checks and receipts
+      security: []
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: Bounty detail } }
+  /reports:
+    post:
+      summary: Report a problem; the AI writes the bounty (checklist, estimate, hazard) and the rules price it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [text, area, lat, lng]
+              properties:
+                text: { type: string }
+                area: { type: string }
+                lat: { type: number }
+                lng: { type: number }
+                photo: { $ref: "#/components/schemas/Photo" }
+      responses:
+        "200": { description: Draft bounty, content: { application/json: { schema: { $ref: "#/components/schemas/Bounty" } } } }
+        "409": { $ref: "#/components/responses/Refused" }
+  /bounties/{id}/publish:
+    post:
+      summary: Publish a draft; the goal can't go below the fair-price floor
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { goal_cents: { type: integer } } } } } }
+      responses: { "200": { description: Published }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/pledges:
+    post:
+      summary: Start a pledge; creates a PayPal order with intent AUTHORIZE for the buyer to approve
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [amount_cents], properties: { amount_cents: { type: integer }, renew_of: { type: string } } } } }
+      responses:
+        "200": { description: Order created, content: { application/json: { schema: { type: object, properties: { pledge_id: { type: string }, order_id: { type: string } } } } } }
+        "409": { $ref: "#/components/responses/Refused" }
+  /pledges/{id}/confirm:
+    post:
+      summary: After PayPal approval, authorize the order (money held, not charged)
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        "200": { description: Authorized, content: { application/json: { schema: { $ref: "#/components/schemas/Pledge" } } } }
+        "409": { $ref: "#/components/responses/Refused" }
+  /bounties/{id}/claim:
+    post:
+      summary: Claim a funded bounty (not the reporter or a funder; holds must have 10+ days left)
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: Claimed }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/photos:
+    post:
+      summary: Doer adds the before or after photo
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/Photo"
+                - type: object
+                  required: [kind]
+                  properties: { kind: { type: string, enum: [before, after] } }
+      responses: { "200": { description: Stored (EXIF stripped) }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/proof:
+    post:
+      summary: Submit proof; AI check plus fraud checks, then the rules capture pledges and pay out, open an objection window, ask a neighbour, or send it to the funders' vote
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: Decision applied }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/object:
+    post:
+      summary: A funder objects during the 24-hour window
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string } } } } } }
+      responses: { "200": { description: Sent to vote }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/vote:
+    post:
+      summary: Funder votes; weighted by amount pledged, a tie pays the doer
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [choice], properties: { choice: { type: string, enum: [pay, refund] } } } } } }
+      responses: { "200": { description: Vote recorded }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/confirm:
+    post:
+      summary: A neighbour confirms a large bounty on the spot
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Photo" } } } }
+      responses: { "200": { description: Confirmed }, "409": { $ref: "#/components/responses/Refused" } }
+  /bounties/{id}/recheck:
+    post:
+      summary: The "still fixed?" recheck; pays the held-back share if the fix held
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: "#/components/schemas/Photo" } } } }
+      responses: { "200": { description: Recheck applied }, "409": { $ref: "#/components/responses/Refused" } }
+  /ledger:
+    get:
+      summary: Every receipt, hash-chained
+      security: []
+      responses:
+        "200": { description: Receipts, content: { application/json: { schema: { type: array, items: { $ref: "#/components/schemas/LedgerEntry" } } } } }
+  /ledger/verify:
+    get:
+      summary: Re-check the whole hash chain
+      security: []
+      responses:
+        "200":
+          description: Result
+          content: { application/json: { schema: { type: object, properties: { ok: { type: boolean }, count: { type: integer }, broken_at: { type: integer, nullable: true }, head: { type: string } } } } }
+  /cases:
+    get:
+      summary: Support cases
+      security: []
+      responses: { "200": { description: Cases } }
+    post:
+      summary: Open a support case
+      requestBody:
+        required: true
+        content: { application/json: { schema: { type: object, required: [kind, body], properties: { bounty_id: { type: string, nullable: true }, kind: { type: string }, body: { type: string } } } } }
+      responses: { "200": { description: Opened } }
+  /cases/{id}/investigate:
+    post:
+      summary: AI investigates with the PayPal Agent Toolkit (read-only) and proposes a next step
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses: { "200": { description: Finding } }
+  /reconcile:
+    post:
+      summary: Compare our records with PayPal's; open a case per mismatch
+      responses: { "200": { description: Mismatches } }
+  /health/areas:
+    get:
+      summary: Area health (measured, plus labelled sample trends)
+      security: []
+      responses: { "200": { description: Areas } }
