@@ -1,0 +1,38 @@
+# Docs
+
+- Home
+  - [Home](/docs/)
+  - API Reference
+    - Session: Demo sign-in
+      - [Sign in as a demo neighbour](/docs/api/openapi/session/signIn): Sign in as a demo neighbour
+    - Bounties: Report, publish, list and claim bounties
+      - [List bounties with money totals](/docs/api/openapi/bounties/listBounties): List bounties with money totals
+      - [A bounty with its pledges, payouts, photos, AI checks and receipts](/docs/api/openapi/bounties/getBounty): A bounty with its pledges, payouts, photos, AI checks and receipts
+      - [Report a problem; the AI writes the bounty (checklist, estimate, hazard) and the rules price it](/docs/api/openapi/bounties/reportProblem): Report a problem; the AI writes the bounty (checklist, estimate, hazard) and the rules price it
+      - [Publish a draft; the goal can't go below the fair-price floor](/docs/api/openapi/bounties/publishBounty): Publish a draft; the goal can't go below the fair-price floor
+      - [Claim a funded bounty (not the reporter or a funder; holds must have 10+ days left)](/docs/api/openapi/bounties/claimBounty): Claim a funded bounty (not the reporter or a funder; holds must have 10+ days left)
+      - [Area health (measured, plus labelled sample trends)](/docs/api/openapi/bounties/getAreaHealth): Area health (measured, plus labelled sample trends)
+    - Pledges: PayPal holds toward a bounty
+      - [Start a pledge; creates a PayPal order with intent AUTHORIZE for the buyer to approve](/docs/api/openapi/pledges/startPledge): Start a pledge; creates a PayPal order with intent AUTHORIZE for the buyer to approve
+      - [After PayPal approval, authorize the order (money held, not charged)](/docs/api/openapi/pledges/confirmPledge): After PayPal approval, authorize the order (money held, not charged)
+    - Proof: Photos, AI checks, votes and the recheck
+      - [Doer adds the before or after photo](/docs/api/openapi/proof/addPhoto): Doer adds the before or after photo
+      - [Submit proof; AI check plus fraud checks, then the rules capture pledges and pay out, open an objection window, ask a ne](/docs/api/openapi/proof/submitProof): Submit proof; AI check plus fraud checks, then the rules capture pledges and pay out, open an objection window, ask a neighbour, or send it to the funders' vote
+      - [A funder objects during the 24-hour window](/docs/api/openapi/proof/objectToRelease): A funder objects during the 24-hour window
+      - [Funder votes; weighted by amount pledged, a tie pays the doer](/docs/api/openapi/proof/vote): Funder votes; weighted by amount pledged, a tie pays the doer
+      - [A neighbour confirms a large bounty on the spot](/docs/api/openapi/proof/neighbourConfirm): A neighbour confirms a large bounty on the spot
+      - [The still-fixed recheck; pays the held-back share if the fix held](/docs/api/openapi/proof/submitRecheck): The "still fixed?" recheck; pays the held-back share if the fix held
+    - Receipts: The hash-chained receipt log
+      - [Every receipt, hash-chained](/docs/api/openapi/receipts/listReceipts): Every receipt, hash-chained
+      - [Re-check the whole hash chain](/docs/api/openapi/receipts/verifyReceipts): Re-check the whole hash chain
+    - Support: Support cases and reconciliation with PayPal
+      - [Support cases](/docs/api/openapi/support/listCases): Support cases
+      - [Open a support case](/docs/api/openapi/support/openCase): Open a support case
+      - [AI investigates with the PayPal Agent Toolkit (read-only) and proposes a next step](/docs/api/openapi/support/investigateCase): AI investigates with the PayPal Agent Toolkit (read-only) and proposes a next step
+      - [Compare our records with PayPal's; open a case per mismatch](/docs/api/openapi/support/reconcileWithPayPal): Compare our records with PayPal's; open a case per mismatch
+  - Context Plugin
+    - [Context Plugin](/docs/context-plugin): Give your AI coding assistant working knowledge of this API's SDKs.
+  - SDKs
+    - [SDKs](/docs/sdks): Client libraries for this API.
+    - [TypeScript SDK](/docs/sdks/typescript): Install and start using the TypeScript SDK.
+    - [Python SDK](/docs/sdks/python): Install and start using the Python SDK.

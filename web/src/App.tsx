@@ -109,6 +109,7 @@ export function App() {
               {label}
             </a>
           ))}
+          <a href="/docs/">API &amp; SDKs</a>
         </nav>
         <div className="who">
           <label>
