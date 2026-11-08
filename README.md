@@ -60,7 +60,13 @@ Gemini (default `gemini-3.5-flash`, set with `GEMINI_MODEL`) through the Vercel 
 - **Bryntum Gantt:** the project plan. A bigger job ("restore the path round the pond") is split into bounties that unlock in order, coloured by where each one is in the money flow, with PayPal hold expiries marked on the timeline. The demo uses Bryntum's public trial package, so the chart shows a trial watermark.
 - **Render:** hosting, with `render.yaml` for a one-click deploy.
 - **Zapier:** `GET /api/feed.rss` lists notifications. Zapier's free "RSS by Zapier" trigger can forward them to email, SMS or Slack.
-- **Postman and APIMatic:** a Postman collection and an OpenAPI 3 spec of the API are in `docs/`.
+- **APIMatic:** the API is described in OpenAPI (`docs/openapi.yaml`), which passes `apimatic api validate`. From it, APIMatic generated:
+  - TypeScript and Python SDKs (`apimatic/sdk/`);
+  - a docs portal, served at [/docs](https://pitch-in.onrender.com/docs/);
+  - a context plugin that teaches AI coding assistants to use the SDKs (`apimatic/plugin/`).
+
+  `examples/residents-association/` is another app built on the TypeScript SDK: a residents' association turns its own "report a problem" form into a Pitch In bounty and starts a PayPal pledge. Against the live sandbox backend, it got a Gemini-written bounty with a 3-item checklist and a real PayPal sandbox order.
+- **Postman:** a collection of the API is in `docs/`.
 
 ## Run it
 
