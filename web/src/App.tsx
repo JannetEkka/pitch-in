@@ -60,6 +60,7 @@ export function App() {
   const [me, setMe] = useState<Me | null>(null);
   const [users, setUsers] = useState<Me["user"][]>([]);
   const [tick, setTick] = useState(0);
+  const [inboxOpen, setInboxOpen] = useState(false);
   const bump = useCallback(() => setTick((t) => t + 1), []);
 
   const refresh = useCallback(async () => {
@@ -111,6 +112,11 @@ export function App() {
           ))}
           <a href="/docs/">API &amp; SDKs</a>
         </nav>
+        {me && me.notifications.length > 0 && (
+          <button className="link updates" onClick={() => setInboxOpen((o) => !o)} aria-expanded={inboxOpen}>
+            Updates ({me.notifications.length})
+          </button>
+        )}
         <div className="who">
           <label>
             <span className="tag">Demo sign-in</span>
@@ -148,7 +154,7 @@ export function App() {
         </div>
       )}
       <main>{page}</main>
-      {me && me.notifications.length > 0 && (
+      {me && inboxOpen && me.notifications.length > 0 && (
         <aside className="inbox" aria-label="Your notifications">
           <h3>For {me.user.name.split(" ")[0]}</h3>
           {me.notifications.slice(0, 4).map((n) => (

@@ -10,7 +10,7 @@ import type { ChecklistItem, JobType, ProofVerdict, RecheckVerdict, Skill } from
 const google = createGoogleGenerativeAI({ apiKey: config.ai.key || "missing" });
 // A slow or failing model never holds a bounty: each model gets a time limit, then the next one in the list
 // is tried. If every model fails, the check counts as unsure and the bounty goes to the funders.
-const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS ?? 45_000);
+const AI_TIMEOUT_MS = Number(process.env.AI_TIMEOUT_MS ?? 20_000);
 
 export async function structured<T>(opts: { schema: z.ZodType<T>; system: string; messages: any[] }): Promise<{ object: T; modelId: string }> {
   const errors: string[] = [];

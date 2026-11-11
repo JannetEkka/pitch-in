@@ -28,7 +28,7 @@ export const config = {
     key: geminiKey,
     model: process.env.GEMINI_MODEL ?? "gemini-3.5-flash",
     // Tried in order when a model times out or errors.
-    models: [process.env.GEMINI_MODEL ?? "gemini-3.5-flash", ...(process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.8-flash,gemini-3.1-flash-lite").split(",").map((m) => m.trim()).filter(Boolean)],
+    models: [process.env.GEMINI_MODEL ?? "gemini-3.5-flash", ...(process.env.GEMINI_FALLBACK_MODELS ?? "gemini-3.1-flash-lite,gemini-3.8-flash").split(",").map((m) => m.trim()).filter(Boolean)],
     mode: geminiKey ? ("gemini" as const) : ("mock" as const),
   },
   // Money limits that the AI cannot change.

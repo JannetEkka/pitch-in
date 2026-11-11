@@ -125,7 +125,8 @@ main { padding: 1rem 1.4rem 4rem; max-width: 1280px; margin: 0 auto; }
 .file { font-size: 0.85rem; color: var(--accent); cursor: pointer; display: inline-flex; gap: 0.4rem; align-items: center; }
 .file input { display: none; }
 
-.inbox { position: fixed; right: 1rem; bottom: 1rem; width: 300px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0.6rem 0.8rem; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08); font-size: 0.82rem; }
+.updates { font-size: 0.88rem; }
+.inbox { position: fixed; right: 1rem; top: 4.2rem; z-index: 50; width: 300px; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 0.6rem 0.8rem; box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08); font-size: 0.82rem; }
 .inbox h3 { margin: 0 0 0.3rem; font-size: 0.75rem; }
 .inbox a { display: block; color: var(--ink); text-decoration: none; padding: 0.3rem 0; border-top: 1px solid var(--line); }
 @media (max-width: 900px) { .inbox { display: none; } }

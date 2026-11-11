@@ -1,0 +1,9 @@
+scene01.mp3	20.2
+scene02.mp3	20.9
+scene03.mp3	12.7
+scene04.mp3	13.1
+scene05.mp3	22.1
+scene06.mp3	23.3
+scene07.mp3	16.7
+scene08.mp3	19.4
+scene09.mp3	5.3
