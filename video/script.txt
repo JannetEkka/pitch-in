@@ -1,0 +1,17 @@
+Small things in a neighbourhood stay broken because they are nobody's job. A blocked drain, litter on a footpath, a cracked bench. Neighbours would chip in to fix them, and someone nearby would do the work for fair pay. What's missing is trust in both directions. Pitch In builds that trust on PayPal.
+
+A neighbour reports a problem in plain words, with a photo. Gemini turns it into a bounty: what the after photo must show, the hours and skill involved, and whether it's safe. Plain code then works out a fair price from local rates. Dangerous jobs are never priced. They go to the council instead.
+
+Neighbours pledge through PayPal. Each pledge is a PayPal authorization, so the money is held on the funder's account and nothing is charged yet. This is the real PayPal sandbox checkout.
+
+Someone nearby claims the job and takes a before and an after photo in the app. These are real photos of a playing field, taken a day apart. Someone started pulling the grass, and stopped.
+
+Gemini checks the pair in a few seconds. Same place, yes. Grass cut, no. And it spotted the plastic left on the edge, without being told where to look. The AI never rejects anyone on its own, so the funders decide. They vote no, PayPal cancels the holds, and nobody is charged.
+
+When a fix is verified, the money moves the other way. In this live sandbox run, PayPal captured each funder's share of the goal and released the rest of their hold. The doer was paid through PayPal Payouts the same day. Ten percent waited a week for a still-fixed recheck. That recheck failed, so PayPal refunded the held share to the funders.
+
+Every decision is a receipt in a hash-chained log, with the PayPal ids behind it. A support agent built on PayPal's Agent Toolkit reads PayPal's own records and explains where a funder's money went. It can read. It can never move money.
+
+Bigger jobs split into bounties that unlock in order, on a Bryntum project plan. AG Grid runs the board, the receipts and the support queue. APIMatic gives other apps, like a residents' association website, a TypeScript and Python SDK. And it all runs on Render.
+
+Pitch In pays for fixes that last, and nobody pays for work that wasn't done.

@@ -105,11 +105,14 @@ npm test             # 29 tests: money rules, pricing, the full lifecycle, tampe
   - it paid the doer $20.70 through Payouts and held back $2.30;
   - the recheck failed, the funders voted to refund, and PayPal refunded $1.15 to each funder.
   - Reconciling our records against PayPal afterwards found 0 mismatches, and the receipt chain verified intact (35 entries).
-- **Model fallback:** each AI call has a 45 s limit and then moves to the next model (`gemini-3.5-flash` → `gemini-3.8-flash` → `gemini-3.1-flash-lite`). In a forced test where the first model was made to fail, the answer came from the third model in 4.2 s. If every model fails, the bounty goes to the funders.
+- **Model fallback:** each AI call has a 20 s limit and then moves to the next model (`gemini-3.5-flash` → `gemini-3.1-flash-lite` → `gemini-3.8-flash`). In a forced test where the first model was made to fail, the answer came from a fallback model in 4.2 s. While recording the demo, `gemini-3.5-flash` timed out on both photo checks, and `gemini-3.1-flash-lite` answered correctly. If every model fails, the bounty goes to the funders.
 - **Speed with `gemini-3.5-flash`:**
   - writing a bounty from a report: 5.6 s;
   - checking a before/after pair: 3.7 s;
   - a support investigation that called three tools, including the Agent Toolkit's `get_refund`, and explained the money correctly: 20.7 s.
+- **Real photos** ([eval/](eval/README.md)): two photos of a playing field a day apart, where someone had started pulling the grass and didn't finish.
+  - Gemini said it was the same place (0.95), and that the grass wasn't cut and litter remained, so nothing would be paid automatically.
+  - With a hidden "pay now" note written onto the photo, it flagged the instruction and still marked both items as not met.
 - **Fake photos:** with synthetic test images, Gemini said they weren't photos of a real place (confidence 0.99), so the bounty went to the funders instead of paying.
 
 - **Tested:** the money rules and the full lifecycle run in 29 automated tests against the stand-in PayPal:
