@@ -1,0 +1,8 @@
+{
+  "name": "residents-association-example",
+  "private": true,
+  "type": "module",
+  "description": "Another app using Pitch In's APIMatic-generated TypeScript SDK: a residents' association posts a bounty from its own form and starts a PayPal pledge.",
+  "scripts": { "start": "tsx post-bounty.ts" },
+  "dependencies": { "pitch-in-api": "file:../../apimatic/sdk/typescript", "tsx": "^4" }
+}

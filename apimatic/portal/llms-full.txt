@@ -1,0 +1,261 @@
+# Context Plugin (/docs/context-plugin)
+
+The context plugin teaches your AI coding assistant how to use this API's SDKs, so the code it writes for you calls the API the way the SDKs are meant to be used.
+
+## Install [#install]
+
+```bash
+npx context-plugins install "https://pitch-in.onrender.com/docs/__downloads/plugin.zip"
+```
+
+## What it does [#what-it-does]
+
+Once the plugin is installed, describe what you want to build and your assistant works from the SDK for your language: how to install it and create a client, how to authenticate, and which methods and types to use for each call. You spend less time correcting code written from guesses about the API.
+
+## Supported languages [#supported-languages]
+
+- TypeScript
+- Python
+
+## Supported platforms [#supported-platforms]
+
+- Claude Code
+- Cursor
+- GitHub Copilot
+
+# SDKs (/docs/sdks)
+
+- [TypeScript](/docs/sdks/typescript): [Download SDK](/docs/__downloads/sdk/typescript.zip)
+- [Python](/docs/sdks/python): [Download SDK](/docs/__downloads/sdk/python.zip)
+
+# Python SDK (/docs/sdks/python)
+
+[Download SDK](/docs/__downloads/sdk/python.zip)
+
+## Intro [#intro]
+
+The Pitch In API SDK provides access to the Pitch In API REST APIs.
+
+Neighbourhood bounties paid through PayPal only when the fix is verified, and again when it lasts. Pledges are PayPal authorizations (held, not charged). The doer is paid with PayPal Payouts. Sign in by sending a sample neighbour id in the X-Pitch-In-User header (demo only; production would use Log in with PayPal).
+
+## Installation [#installation]
+
+Add the SDK to your project from its folder, with whichever package manager your project uses. Give each tool a path containing a slash, such as `../pitch-in-api` — a bare folder name is looked up on PyPI instead, and resolves to whatever project holds that name there:
+
+```bash
+pip install <path-to-sdk>
+```
+
+```bash
+uv add <path-to-sdk>
+```
+
+```bash
+poetry add <path-to-sdk>
+```
+
+## Quick Start [#quick-start]
+
+### Synchronous client [#synchronous-client]
+
+Construct `PitchInApiClient` with keyword arguments, and call `close()` when you are done. Every argument is optional.
+
+```python
+from pitch_in_api import PitchInApiClient
+
+client = PitchInApiClient(demo_user="YOUR_API_KEY", environment="production")
+
+client.close()
+```
+
+Alternatively, scope it — `with PitchInApiClient(...) as client:` closes the pool on exit.
+
+### Asynchronous client [#asynchronous-client]
+
+`AsyncPitchInApiClient` mirrors `PitchInApiClient` with **identical method names**, and every endpoint method is a coroutine. It takes the same arguments, with some differences — for example, the transport argument is `custom_async_http_client`.
+
+```python
+from asyncio import run
+
+from pitch_in_api import AsyncPitchInApiClient
+
+async def main() -> None:
+    client = AsyncPitchInApiClient(demo_user="YOUR_API_KEY", environment="production")
+    await client.aclose()
+
+run(main())
+```
+
+Alternatively, scope it — `async with AsyncPitchInApiClient(...) as client:` closes the pool on exit.
+
+# TypeScript SDK (/docs/sdks/typescript)
+
+[Download SDK](/docs/__downloads/sdk/typescript.zip)
+
+## Intro [#intro]
+
+The Pitch In API SDK provides access to the Pitch In API REST APIs.
+
+Neighbourhood bounties paid through PayPal only when the fix is verified, and again when it lasts. Pledges are PayPal authorizations (held, not charged). The doer is paid with PayPal Payouts. Sign in by sending a sample neighbour id in the X-Pitch-In-User header (demo only; production would use Log in with PayPal).
+
+## Installation [#installation]
+
+The SDK compiles to `dist/` before it can be referenced — run its `build` script once in the SDK folder, then add it to your project by path:
+
+```bash
+npm install <path-to-sdk>
+```
+
+## Quick Start [#quick-start]
+
+Create one client and reuse it. Configure its behaviour through `ClientOptions`.
+
+```ts
+import { PitchInApiClient, ServerEnvironment } from "pitch-in-api";
+
+const client = new PitchInApiClient({
+  serverEnvironment: ServerEnvironment.Production,
+  demoUser: "YOUR_API_KEY",
+});
+```
+
+Nothing in `ClientOptions` is required — `new PitchInApiClient()` compiles — and each option left out falls back to its default. `serverEnvironment` is spelled out above so the environment a call reaches is visible where the client is built rather than inherited silently.
+
+### From CommonJS [#from-commonjs]
+
+The package ships both dialects from a single entry, so `require` works with full types. In a TypeScript CommonJS file use the `import ... = require(...)` form — a plain destructuring `require` runs fine but gives you `any`.
+
+```ts
+import sdk = require("pitch-in-api");
+
+const client = new sdk.PitchInApiClient({
+  serverEnvironment: sdk.ServerEnvironment.Production,
+  demoUser: "YOUR_API_KEY",
+});
+```
+
+# Sign in as a demo neighbour (/docs/api/openapi/session/signIn)
+
+`POST /session`
+
+Sign in as a demo neighbour
+
+# List bounties with money totals (/docs/api/openapi/bounties/listBounties)
+
+`GET /bounties`
+
+List bounties with money totals
+
+# A bounty with its pledges, payouts, photos, AI checks and receipts (/docs/api/openapi/bounties/getBounty)
+
+`GET /bounties/{id}`
+
+A bounty with its pledges, payouts, photos, AI checks and receipts
+
+# Report a problem; the AI writes the bounty (checklist, estimate, hazard) and the rules price it (/docs/api/openapi/bounties/reportProblem)
+
+`POST /reports`
+
+Report a problem; the AI writes the bounty (checklist, estimate, hazard) and the rules price it
+
+# Publish a draft; the goal can't go below the fair-price floor (/docs/api/openapi/bounties/publishBounty)
+
+`POST /bounties/{id}/publish`
+
+Publish a draft; the goal can't go below the fair-price floor
+
+# Claim a funded bounty (not the reporter or a funder; holds must have 10+ days left) (/docs/api/openapi/bounties/claimBounty)
+
+`POST /bounties/{id}/claim`
+
+Claim a funded bounty (not the reporter or a funder; holds must have 10+ days left)
+
+# Area health (measured, plus labelled sample trends) (/docs/api/openapi/bounties/getAreaHealth)
+
+`GET /health/areas`
+
+Area health (measured, plus labelled sample trends)
+
+# Start a pledge; creates a PayPal order with intent AUTHORIZE for the buyer to approve (/docs/api/openapi/pledges/startPledge)
+
+`POST /bounties/{id}/pledges`
+
+Start a pledge; creates a PayPal order with intent AUTHORIZE for the buyer to approve
+
+# After PayPal approval, authorize the order (money held, not charged) (/docs/api/openapi/pledges/confirmPledge)
+
+`POST /pledges/{id}/confirm`
+
+After PayPal approval, authorize the order (money held, not charged)
+
+# Doer adds the before or after photo (/docs/api/openapi/proof/addPhoto)
+
+`POST /bounties/{id}/photos`
+
+Doer adds the before or after photo
+
+# Submit proof; AI check plus fraud checks, then the rules capture pledges and pay out, open an objection window, ask a ne (/docs/api/openapi/proof/submitProof)
+
+`POST /bounties/{id}/proof`
+
+Submit proof; AI check plus fraud checks, then the rules capture pledges and pay out, open an objection window, ask a neighbour, or send it to the funders' vote
+
+# A funder objects during the 24-hour window (/docs/api/openapi/proof/objectToRelease)
+
+`POST /bounties/{id}/object`
+
+A funder objects during the 24-hour window
+
+# Funder votes; weighted by amount pledged, a tie pays the doer (/docs/api/openapi/proof/vote)
+
+`POST /bounties/{id}/vote`
+
+Funder votes; weighted by amount pledged, a tie pays the doer
+
+# A neighbour confirms a large bounty on the spot (/docs/api/openapi/proof/neighbourConfirm)
+
+`POST /bounties/{id}/confirm`
+
+A neighbour confirms a large bounty on the spot
+
+# The still-fixed recheck; pays the held-back share if the fix held (/docs/api/openapi/proof/submitRecheck)
+
+`POST /bounties/{id}/recheck`
+
+The "still fixed?" recheck; pays the held-back share if the fix held
+
+# Every receipt, hash-chained (/docs/api/openapi/receipts/listReceipts)
+
+`GET /ledger`
+
+Every receipt, hash-chained
+
+# Re-check the whole hash chain (/docs/api/openapi/receipts/verifyReceipts)
+
+`GET /ledger/verify`
+
+Re-check the whole hash chain
+
+# Support cases (/docs/api/openapi/support/listCases)
+
+`GET /cases`
+
+Support cases
+
+# Open a support case (/docs/api/openapi/support/openCase)
+
+`POST /cases`
+
+Open a support case
+
+# AI investigates with the PayPal Agent Toolkit (read-only) and proposes a next step (/docs/api/openapi/support/investigateCase)
+
+`POST /cases/{id}/investigate`
+
+AI investigates with the PayPal Agent Toolkit (read-only) and proposes a next step
+
+# Compare our records with PayPal's; open a case per mismatch (/docs/api/openapi/support/reconcileWithPayPal)
+
+`POST /reconcile`
+
+Compare our records with PayPal's; open a case per mismatch

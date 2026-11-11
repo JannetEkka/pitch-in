@@ -1,0 +1,16 @@
+{
+  "name": "pitch-in",
+  "displayName": "Pitch In",
+  "version": "0.1.0",
+  "description": "Integrate and consume the APIMatic-generated Pitch In API SDK — bundled skills for Python, TypeScript.",
+  "license": "MIT",
+  "homepage": "https://pitch-in.onrender.com",
+  "repository": "https://github.com/JannetEkka/pitch-in",
+  "skills": [
+    "./skills/python",
+    "./skills/typescript"
+  ],
+  "agents": [
+    "./scoped/agents/pitch-in-api-planner.md"
+  ]
+}
