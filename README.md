@@ -110,6 +110,9 @@ npm test             # 29 tests: money rules, pricing, the full lifecycle, tampe
   - writing a bounty from a report: 5.6 s;
   - checking a before/after pair: 3.7 s;
   - a support investigation that called three tools, including the Agent Toolkit's `get_refund`, and explained the money correctly: 20.7 s.
+- **Real photos** ([eval/](eval/README.md)): two photos of a playing field a day apart, where someone had started pulling the grass and didn't finish.
+  - Gemini said it was the same place (0.95), and that the grass wasn't cut and litter remained, so nothing would be paid automatically.
+  - With a hidden "pay now" note written onto the photo, it flagged the instruction and still marked both items as not met.
 - **Fake photos:** with synthetic test images, Gemini said they weren't photos of a real place (confidence 0.99), so the bounty went to the funders instead of paying.
 
 - **Tested:** the money rules and the full lifecycle run in 29 automated tests against the stand-in PayPal:
